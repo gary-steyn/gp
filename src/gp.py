@@ -9,7 +9,7 @@ from gp_utils import *
 from operators.mutation import *
 from operators.selection import *
 from operators.crossover import *
-
+from config import n_generations, global_mut_rate, global_xo_rate
 from sklearn.metrics import r2_score
 
 class GP:
@@ -46,14 +46,13 @@ class GP:
         return fitnesses
 
     def run(self):
-        n_generations = 100
         for n in range(n_generations):
             offspring = []
             self.fitnesses = self.evaluate()
             for i, tree in enumerate(self.population):
-                if np.random.uniform() < 0.2:
+                if np.random.uniform() < global_mut_rate:
                     self.mutate(tree)
-                if np.random.uniform() < 0.5:
+                if np.random.uniform() < global_xo_rate:
                     child = crossover(self, tree)
                     offspring.append(child)
             self.population = update_population(self, self.population, offspring, self.fitnesses)
@@ -61,34 +60,11 @@ class GP:
     def mutate(self, tree):
         tnodes, fnodes = update_nodes_list(tree)
         
-        mut = [trunc, shrink, grow, logical_swap, phycial_swap]
-        shuffle(mut)
+        mutations = [trunc, shrink, grow, logical_swap, physical_swap]
+        shuffle(mutations)
 
-        for m in mut:
-            if np.random.uniform() < 0.5:
-                m(self, tnodes, fnodes)
+        for apply_mutation in mutations:
+                apply_mutation(self, tnodes, fnodes)
                 tnodes, fnodes = update_nodes_list(tree)
-
-        # if np.random.uniform() < 0.5:
-        #     trunc(self, tnodes, fnodes)
-        #     tnodes, fnodes = update_nodes_list(tree)
-
-        # if np.random.uniform() < 0.5:
-        #     shrink(self, tnodes, fnodes)
-        #     tnodes, fnodes = update_nodes_list(tree)
-
-        # if np.random.uniform() < 0.5:
-        #     grow(self, tnodes, fnodes)
-        #     tnodes, fnodes = update_nodes_list(tree)
-
-        # if np.random.uniform() < 0.5:
-        #     logical_swap(self, tnodes, fnodes)
-        #     tnodes, fnodes = update_nodes_list(tree)
-
-        # if np.random.uniform() < 0.5:
-        #     phycial_swap(self, fnodes)
-        #     tnodes, fnodes = update_nodes_list(tree)
-
-        # tnodes, fnodes = self.update_nodes_list(tree)
         
         print(len(tnodes), len(fnodes))

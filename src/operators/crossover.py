@@ -5,7 +5,6 @@ from operators.selection import selection_for_crossover
 
 selection_method = "tournament_selection"
 
-
 def crossover(gp, tree):
     offspring = deepcopy(tree)
     # selected = choice(gp.population)
